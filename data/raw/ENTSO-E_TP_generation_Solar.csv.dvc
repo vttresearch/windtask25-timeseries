@@ -1,0 +1,7 @@
+md5: decaa689f7220d33e17ffa32159b35c5
+outs:
+- md5: 9621ae8510f57c4711aa4615fa450b2b
+  path: ENTSO-E_TP_generation_Solar.csv
+  cache: true
+  metric: false
+  persist: false

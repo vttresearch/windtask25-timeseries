@@ -1,2 +1,4 @@
-*
-!.gitignore
+/ENTSO-E_TP_generation_Solar.csv
+/ENTSO-E_TP_generation_Wind Onshore.csv
+/ENTSO-E_TP_generation_Wind Offshore.csv
+/ENTSO-E_TP_installed_cap.csv

@@ -1,0 +1,7 @@
+md5: d14f7ac47a9d17e8c70cf736260aaa7c
+outs:
+- md5: 794d4ff373ca44fcb1ebe5fe9da7da4c
+  path: ENTSO-E_TP_generation_Wind Offshore.csv
+  cache: true
+  metric: false
+  persist: false
