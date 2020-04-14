@@ -1,0 +1,7 @@
+md5: 24e354f99c3d70cc09d19e2761b731a2
+outs:
+- md5: 6780b95c04beca4b35347c03dc690aa5
+  path: ENTSO-E_TP_forecast_Wind Onshore.csv
+  cache: true
+  metric: false
+  persist: false
