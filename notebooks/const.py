@@ -3,8 +3,8 @@
 
 TZ = 'UTC'
 
-START = "20180101"
-END = "20190101"
+START = "2018-01-01"
+END = "2019-01-01"
 
 COUNTRIES = [
   # Task 25 countries in Europe
