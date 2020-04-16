@@ -9,7 +9,7 @@ from multiprocessing.dummy import Pool
 
 from requests.exceptions import HTTPError
 from entsoe import EntsoePandasClient
-from entsoe.mappings import PSRTYPE_MAPPINGS
+from entsoe.mappings import PSRTYPE_MAPPINGS, TIMEZONE_MAPPINGS
 from entsoe.exceptions import NoMatchingDataError
 import pandas as pd
 
@@ -95,16 +95,19 @@ class ENTSO_E_TP_Downloader(object):
         try:
             df = self.client.query_installed_generation_capacity(
                 domain, 
-                start=pd.Timestamp(f'{pd.Timestamp(START).year - 1}-01-01'), 
-                end=pd.Timestamp(END), 
+                start=pd.Timestamp(f'{pd.Timestamp(START).year}-01-01',
+                                   tz=TIMEZONE_MAPPINGS[domain]), 
+                end=pd.Timestamp(f'{pd.Timestamp(END).year}-12-31', 
+                                 tz=TIMEZONE_MAPPINGS[domain]),
                 psr_type=inverted_psr_mapping[gentype]
             )
         except NoMatchingDataError:
             print(f"No data for {gentype} in {domain}!")
         else:
             ts = df[gentype]  # Select the only column
-            ts.index = ts.index.year  # ENTSO-E has numbers for the beginning of the year
-            ts.index.name = 'Year'
+            ts.index = [pd.Timestamp(year=t.year, month=1, day=1) 
+                        for t in ts.index]  # ENTSO-E has numbers for the beginning of the year
+            ts.index.name = 'Date'
             ts.name = ts_name
         return ts
     
