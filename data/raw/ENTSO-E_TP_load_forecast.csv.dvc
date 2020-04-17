@@ -1,0 +1,7 @@
+md5: cb4f07205eb1f2e898ae2d6f6c46bf2a
+outs:
+- md5: b27b699fa9b646661679842003191185
+  path: ENTSO-E_TP_load_forecast.csv
+  cache: true
+  metric: false
+  persist: false

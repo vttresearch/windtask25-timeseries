@@ -132,7 +132,7 @@ class ENTSO_E_TP_Downloader(object):
         return ts.sort_index()
     
     def get_fcast_data(self, domain: str, gentype: str) -> pd.Series:
-        """Query generation data for country and generation type
+        """Query generation forecast data for domain and generation type
         """       
         # Execute the query
         ts = pd.Series(name=(domain, gentype)).tz_localize(TZ)
@@ -150,4 +150,51 @@ class ENTSO_E_TP_Downloader(object):
         else:
             ts = harmonize_datetime_index(df[gentype])
             ts.name = (domain, gentype)
+        return ts.sort_index()
+    
+    def get_load_fcast(self, domain: str) -> pd.Series:
+        """Query load forecast data for domain and generation type
+        """       
+        return self.exec_timeseries_query(self.client.query_load_forecast,
+                                          domain=domain,
+                                          start=START,
+                                          end=END
+                                          identifier=domain
+                                          )
+        
+    def exec_timeseries_query(self, query_func: Callable, 
+                              domain: str,
+                              start: str, end: str, 
+                              psr_type: str = None, 
+                              identifier=None):
+        """Execute a time series query
+        
+        Args:
+            quary_func: Callable returning a Pandas series
+            domain: Country code etc.
+            start, end: Start and end times
+            psr_type (optional): PSR type
+            indentifier (optional): Indentifier to use for the name of the returned time 
+                         series            
+        """
+        
+        ts_name = identifier
+        ts = pd.Series(name=ts_name).tz_localize(TZ)
+    
+        # Build arguments for the actual query        
+        kwargs = dict(country_code=domain, 
+                      start=pd.Timestamp(start, tz=TZ),
+                      end=pd.Timestamp(end, tz=TZ))
+        if psr_type is not None:
+            kwargs['psr_type'] = psr_type
+        
+        try:
+            ts = query_func(**kwargs)
+        except NoMatchingDataError:
+            print(f"No data for {ts_name}!")
+        except ValueError:
+            print(f"Error getting data for {ts_name}!")
+        else:
+            ts = harmonize_datetime_index(ts)
+            ts.name = ts_name
         return ts.sort_index()
