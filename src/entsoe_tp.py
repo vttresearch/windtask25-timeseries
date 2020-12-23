@@ -42,7 +42,7 @@ def download_parallel(function: Callable, arguments,
         print(e.response)
         raise e
 
-    df = pd.concat(series, axis=1)
+    df = pd.concat(series, axis=1).dropna(1, how='all')
     if index_name is not None:
         df.index.name = index_name
     if columns_name is not None:
@@ -66,24 +66,13 @@ class ENTSO_E_TP_Downloader(object):
         """Query generation data for domain and generation type
         """ 
         # Execute the query
-        ts = pd.Series(name=(domain, gentype)).tz_localize(TZ)
-        try:
-            df = self.client.query_generation(
-                domain, 
-                start=pd.Timestamp(START, tz=TZ), 
-                end=pd.Timestamp(END, tz=TZ), 
-                psr_type=inverted_psr_mapping[gentype],
-            )
-        except NoMatchingDataError:
-            print(f"No data for {gentype} in {domain}!")
-        except ValueError:
-            print(f"Error getting data for {gentype} in {domain}!")
-        else:
-            # Make sure we have real timestamps in UTC
-            ts = harmonize_datetime_index(df[gentype])
-            ts.name = (domain, gentype)
-        return ts.sort_index()
-    
+        return self.exec_timeseries_query(
+            self.client.query_generation,
+            domain=domain,
+            start=START,
+            end=END,
+            psr_type=inverted_psr_mapping[gentype])
+        
     def get_installed_cap_data(self, gentype: str, 
                                domain: str) -> pd.Series:
         """Query generation data for domain and generation type
@@ -114,53 +103,34 @@ class ENTSO_E_TP_Downloader(object):
     def get_load_data(self, domain: str) -> pd.Series:
         """Query generation data for country and generation type
         """       
-        # Execute the query
-        ts = pd.Series(name=domain).tz_localize(TZ)
-        try:
-            ts = self.client.query_load(
-                domain, 
-                start=pd.Timestamp(START, tz=TZ), 
-                end=pd.Timestamp(END, tz=TZ)
-                )
-        except NoMatchingDataError:
-            print(f"No data for {domain}!")
-        except ValueError:
-            print(f"Error getting data for {domain}!")
-        else:
-            ts = harmonize_datetime_index(ts)
-            ts.name = domain
-        return ts.sort_index()
+        
+        return self.exec_timeseries_query(
+            self.client.query_load,
+            domain=domain,
+            start=START,
+            end=END)
     
     def get_fcast_data(self, domain: str, gentype: str) -> pd.Series:
         """Query generation forecast data for domain and generation type
         """       
         # Execute the query
-        ts = pd.Series(name=(domain, gentype)).tz_localize(TZ)
-        try:
-            df = self.client.query_wind_and_solar_forecast(
-                domain, 
-                start=pd.Timestamp(START, tz=TZ), 
-                end=pd.Timestamp(END, tz=TZ), 
-                psr_type=inverted_psr_mapping[gentype]
-            )
-        except NoMatchingDataError:
-            print(f"No data for {gentype} in {domain}!")
-        except ValueError:
-            print(f"Error getting forecast data for {gentype} in {domain}!")
-        else:
-            ts = harmonize_datetime_index(df[gentype])
-            ts.name = (domain, gentype)
-        return ts.sort_index()
+        return self.exec_timeseries_query(
+            self.client.query_wind_and_solar_forecast,
+            domain=domain,
+            start=START,
+            end=END,
+            psr_type=inverted_psr_mapping[gentype],
+            identifier=(domain, gentype))
     
     def get_load_fcast(self, domain: str) -> pd.Series:
         """Query load forecast data for domain and generation type
         """       
-        return self.exec_timeseries_query(self.client.query_load_forecast,
-                                          domain=domain,
-                                          start=START,
-                                          end=END
-                                          identifier=domain
-                                          )
+        return self.exec_timeseries_query(
+            self.client.query_load_forecast,
+            domain=domain,
+            start=START,
+            end=END,
+            identifier=domain)
         
     def exec_timeseries_query(self, query_func: Callable, 
                               domain: str,
@@ -178,6 +148,9 @@ class ENTSO_E_TP_Downloader(object):
                          series            
         """
         
+        if identifier is None:
+            identifier = domain
+        
         ts_name = identifier
         ts = pd.Series(name=ts_name).tz_localize(TZ)
     
@@ -194,6 +167,8 @@ class ENTSO_E_TP_Downloader(object):
             print(f"No data for {ts_name}!")
         except ValueError:
             print(f"Error getting data for {ts_name}!")
+        except KeyError:
+            print(f"No data for {domain}.")
         else:
             ts = harmonize_datetime_index(ts)
             ts.name = ts_name
