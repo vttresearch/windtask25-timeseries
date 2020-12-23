@@ -1,0 +1,21 @@
+name: windtask25-timeseries
+channels:
+- defaults
+- conda-forge
+dependencies:
+- python
+- ipykernel
+- spyder-kernels 
+- pyqt=5
+- pylint
+- pandas ==1.0.3
+- matplotlib
+- scipy
+- xlrd
+- pycountry
+- python-dotenv
+- pandas-datapackage-reader
+- pip
+- pip:
+    - entsoe-py ==0.2.12
+    - "-e ."
