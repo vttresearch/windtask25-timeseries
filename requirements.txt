@@ -1,8 +1,0 @@
-entsoe-py ==0.2.12
-pandas ==1.0.3
-python-dotenv
-matplotlib
-pycountry
-xlrd
-nbformat
--e .
