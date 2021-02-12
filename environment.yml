@@ -9,12 +9,14 @@ dependencies:
 - pyqt=5
 - pylint
 - pandas ==1.0.3
+- openpyxl
 - matplotlib
 - scipy
 - xlrd
 - pycountry
 - python-dotenv
 - pandas-datapackage-reader
+- frictionless
 - pip
 - pip:
     - entsoe-py ==0.2.12
