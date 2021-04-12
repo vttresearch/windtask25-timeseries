@@ -7,5 +7,5 @@ setup(
     description=None,
     author='Erkka Rinne',
     author_email='erkka.rinne@vtt.fi',
-    license=None,
+    license='MIT',
 )
