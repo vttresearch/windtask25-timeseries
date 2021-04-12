@@ -1,7 +1,0 @@
-md5: c8ae6ca5bda01bff417b6f6c58482dcb
-outs:
-- md5: 3fcb85d233792932453fa6d0dcf90ed1
-  path: Cumulative_capacity_table_data_2017.csv
-  cache: true
-  metric: false
-  persist: false

@@ -1,7 +1,0 @@
-md5: 088a5677feba4790509ff5af13862678
-outs:
-- md5: 7f1f65c3dadfa7f7555457b7903f2d14
-  path: ENTSO-E_TP_forecast_Solar.csv
-  cache: true
-  metric: false
-  persist: false
