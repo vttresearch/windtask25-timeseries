@@ -129,7 +129,7 @@ def sudded_change_filter(ts):
     return filtered.interpolate()
 
 
-def remove_drops(original, z_score_threshold=Z_SCORE_THRESHOLD, two_pass=False, stats_df=None):
+def remove_drops(original, z_score_threshold=Z_SCORE_THRESHOLD, two_pass=False):
     "Remove sudden drops from a time series"
     
     ts = original.dropna()  # Make sure there are no empty values
@@ -162,22 +162,12 @@ def remove_drops(original, z_score_threshold=Z_SCORE_THRESHOLD, two_pass=False, 
         cleaned.iloc[peaks2] = np.nan
         cleaned.interpolate('time', inplace=True)
         
-    # Calculate RMSE of filter
-    rmse = rmse_of_filter(ts, cleaned)
-    
-    if stats_df is not None:
-        stats_df.loc[ts.name, 'RMSE of filter'] = rmse
-        return cleaned
-    else:
-        return cleaned, {'RMSE of filter': rmse}
+    return cleaned
     
 
-def remove_peaks(original, z_score_threshold=Z_SCORE_THRESHOLD, two_pass=False, stats_df=None):
-    cleaned, statistics = remove_drops(-original, z_score_threshold=z_score_threshold, 
-                                  two_pass=two_pass, stats_df=None)
-    if stats_df is not None:
-        for key, value in statistics.items(): 
-            stats_df.loc[original.name, key] = value
-        return -cleaned
-    else:
-        return -cleaned, {'RMSE of filter': rmse}
+def remove_peaks(original, z_score_threshold=Z_SCORE_THRESHOLD, two_pass=False):
+    cleaned = remove_drops(
+        -original, z_score_threshold=z_score_threshold, 
+        two_pass=two_pass
+    )
+    return -cleaned
