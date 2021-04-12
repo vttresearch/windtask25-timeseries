@@ -8,7 +8,7 @@ orginal nor processed data files are included here.
 ## Data cleaning
 
 An algortihm to remove sudden peaks and drops from original data was developed. 
-See functions `remove_drops()` and `remove_peaks()` in module `src.data_cleaning`.
+See functions `remove_drops()` and `remove_peaks()` in module [`src.data_cleaning`](src/data_cleaning.py).
 The main functionality is based on [`scipy.signal.find_peaks`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.find_peaks.html).
 The idea was to detect single time step peaks (or drops) or ‘plateaus’ of two time steps.
 The threshold value for a peak was set to the smallest absolute change where the change
